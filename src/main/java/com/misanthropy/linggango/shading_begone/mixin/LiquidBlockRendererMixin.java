@@ -15,6 +15,6 @@ public class LiquidBlockRendererMixin {
             index = 1
     )
     private boolean changeShade(boolean shade) {
-        return shade && ShadingConfig.INSTANCE.blockShadingEffective;
+        return shade && ShadingConfig.blockShadingEffective;
     }
 }

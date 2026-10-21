@@ -141,3 +141,18 @@ tasks.named('jar', Jar).configure {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+// An incremental build can skip the mixin annotation processor and leave the refmap out of the
+// jar. That jar runs fine in dev and hard-crashes in production, so refuse to produce one.
+tasks.matching { it.name == 'jar' || it.name == 'jarJar' }.configureEach { Jar task ->
+    task.doLast {
+        def file = task.archiveFile.get().asFile
+        def missing = new java.util.zip.ZipFile(file).withCloseable { zip ->
+            zip.getEntry("${mod_id}.refmap.json") == null
+        }
+        if (missing) {
+            throw new GradleException("${file.name} contains no ${mod_id}.refmap.json - " +
+                    "mixins will fail to apply outside the dev environment. Run: gradlew clean build")
+        }
+    }
+}

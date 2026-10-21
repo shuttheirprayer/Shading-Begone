@@ -11,6 +11,11 @@ public class ClientLevelMixin {
 
     @ModifyVariable(method = "getShade(Lnet/minecraft/core/Direction;Z)F", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private boolean changeShade(boolean shade) {
-        return shade && ShadingConfig.INSTANCE.blockShadingEffective;
+        return shade && ShadingConfig.blockShadingEffective;
+    }
+
+    @ModifyVariable(method = "getShade(FFFZ)F", at = @At("HEAD"), argsOnly = true, ordinal = 0, remap = false)
+    private boolean changeShadeForge(boolean shade) {
+        return shade && ShadingConfig.blockShadingEffective;
     }
 }

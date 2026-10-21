@@ -1,23 +1,16 @@
 package com.misanthropy.linggango.shading_begone.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.misanthropy.linggango.shading_begone.ShadingConfig;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(BakedQuad.class)
 public class BakedQuadMixin {
 
-    @Shadow @Final protected boolean shade;
-
-    /**
-     * @author Misanthropy
-     * @reason For the sake of further optimization
-     */
-    @Overwrite
-    public boolean isShade() {
-        return this.shade && ShadingConfig.INSTANCE.blockShadingEffective;
+    @ModifyReturnValue(method = "isShade", at = @At("RETURN"))
+    private boolean shading_begone$removeShade(boolean original) {
+        return original && ShadingConfig.blockShadingEffective;
     }
 }

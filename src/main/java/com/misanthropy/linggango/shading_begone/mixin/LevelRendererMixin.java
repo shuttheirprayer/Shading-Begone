@@ -9,18 +9,14 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
 
-    @ModifyConstant(method = "buildClouds", constant = @Constant(floatValue = 0.9F))
-    private float changeCloudBrightness9(float original) {
-        return (ShadingConfig.INSTANCE.cloudShadingEnabled || ShadingConfig.INSTANCE.shadersActive) ? original : 1.0F;
-    }
-
-    @ModifyConstant(method = "buildClouds", constant = @Constant(floatValue = 0.7F))
-    private float changeCloudBrightness7(float original) {
-        return (ShadingConfig.INSTANCE.cloudShadingEnabled || ShadingConfig.INSTANCE.shadersActive) ? original : 1.0F;
-    }
-
-    @ModifyConstant(method = "buildClouds", constant = @Constant(floatValue = 0.8F))
-    private float changeCloudBrightness8(float original) {
-        return (ShadingConfig.INSTANCE.cloudShadingEnabled || ShadingConfig.INSTANCE.shadersActive) ? original : 1.0F;
+    @ModifyConstant(method = "buildClouds", constant = {
+            @Constant(floatValue = 0.9F),
+            @Constant(floatValue = 0.7F),
+            @Constant(floatValue = 0.8F, ordinal = 0),
+            @Constant(floatValue = 0.8F, ordinal = 1),
+            @Constant(floatValue = 0.8F, ordinal = 2)
+    })
+    private float changeCloudBrightness(float original) {
+        return ShadingConfig.cloudShadingEffective ? original : 1.0F;
     }
 }

@@ -12,9 +12,6 @@ public class FluidRendererMixin {
 
     @ModifyVariable(method = "updateQuad", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private float changeShade(float brightness) {
-        if (ShadingConfig.INSTANCE.blockShadingEnabled || ShadingConfig.INSTANCE.shadersActive) {
-            return brightness;
-        }
-        return 1.0F;
+        return ShadingConfig.blockShadingEffective ? brightness : 1.0F;
     }
 }

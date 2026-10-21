@@ -13,26 +13,42 @@ import java.nio.file.Path;
 
 public class ShadingConfig {
     private static final Logger LOGGER = LogManager.getLogger(ShadingConfig.class);
-    private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("shading_begone.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    public static final ShadingConfig INSTANCE = new ShadingConfig();
+
+    public static volatile boolean blockShadingEffective = false;
+    public static volatile boolean cloudShadingEffective = false;
+    public static volatile boolean entityShadingEffective = false;
+    public static volatile boolean cloudGeometryDirty = false;
+
     public boolean blockShadingEnabled = false;
     public boolean cloudShadingEnabled = false;
     public boolean entityShadingEnabled = false;
+
     public transient boolean shadersActive = false;
-    public transient boolean blockShadingEffective = false;
-    public transient boolean cloudShadingEffective = false;
-    public transient boolean entityShadingEffective = false;
-    public static final ShadingConfig INSTANCE = new ShadingConfig();
-    public void updateEffectiveStates() {
-        this.blockShadingEffective = this.blockShadingEnabled && !this.shadersActive;
-        this.cloudShadingEffective = this.cloudShadingEnabled && !this.shadersActive;
-        this.entityShadingEffective = this.entityShadingEnabled && !this.shadersActive;
+
+    private static Path configPath() {
+        return FMLPaths.CONFIGDIR.get().resolve("shading_begone.json");
+    }
+
+    public static void updateEffectiveStates() {
+        boolean shaders = INSTANCE.shadersActive;
+        blockShadingEffective = INSTANCE.blockShadingEnabled || shaders;
+        entityShadingEffective = INSTANCE.entityShadingEnabled || shaders;
+
+        boolean clouds = INSTANCE.cloudShadingEnabled || shaders;
+        if (clouds != cloudShadingEffective) {
+            cloudShadingEffective = clouds;
+            cloudGeometryDirty = true;
+        }
     }
 
     public static void load() {
         try {
-            if (Files.exists(CONFIG_PATH)) {
-                try (Reader reader = Files.newBufferedReader(CONFIG_PATH)) {
+            Path path = configPath();
+            if (Files.exists(path)) {
+                try (Reader reader = Files.newBufferedReader(path)) {
                     ShadingConfig loaded = GSON.fromJson(reader, ShadingConfig.class);
                     if (loaded != null) {
                         INSTANCE.blockShadingEnabled = loaded.blockShadingEnabled;
@@ -40,20 +56,24 @@ public class ShadingConfig {
                         INSTANCE.entityShadingEnabled = loaded.entityShadingEnabled;
                     }
                 }
+                updateEffectiveStates();
             } else {
                 save();
             }
-            INSTANCE.updateEffectiveStates();
         } catch (Exception e) {
             LOGGER.error("Failed to load shading_begone config", e);
+            updateEffectiveStates();
         }
     }
 
     public static void save() {
-        INSTANCE.updateEffectiveStates();
-
-        try (Writer writer = Files.newBufferedWriter(CONFIG_PATH)) {
-            GSON.toJson(INSTANCE, writer);
+        updateEffectiveStates();
+        try {
+            Path path = configPath();
+            Files.createDirectories(path.getParent());
+            try (Writer writer = Files.newBufferedWriter(path)) {
+                GSON.toJson(INSTANCE, writer);
+            }
         } catch (Exception e) {
             LOGGER.error("Failed to save shading_begone config", e);
         }

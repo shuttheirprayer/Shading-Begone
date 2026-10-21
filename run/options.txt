@@ -5,8 +5,8 @@ autoSuggestions:true
 chatColors:true
 chatLinks:true
 chatLinksPrompt:true
-enableVsync:false
-entityShadows:false
+enableVsync:true
+entityShadows:true
 forceUnicodeFont:false
 discrete_mouse_scroll:false
 invertYMouse:false
@@ -34,9 +34,9 @@ gamma:0.5
 renderDistance:12
 simulationDistance:12
 entityDistanceScaling:1.0
-guiScale:3
+guiScale:0
 particles:0
-maxFps:260
+maxFps:120
 graphicsMode:1
 ao:true
 prioritizeChunkUpdates:0
@@ -121,12 +121,8 @@ key_key.hotbar.9:key.keyboard.9
 key_iris.keybind.reload:key.keyboard.r
 key_iris.keybind.toggleShaders:key.keyboard.k
 key_iris.keybind.shaderPackSelection:key.keyboard.o
-key_key.shading_begone.reload:key.keyboard.z
-key_key.shading_begone.toggle_block:key.keyboard.x
-key_key.shading_begone.toggle_cloud:key.keyboard.c
-key_key.shading_begone.toggle_entity:key.keyboard.v
-soundCategory_master:0.031125827814569556
-soundCategory_music:1.0
+soundCategory_master:1.0
+soundCategory_music:0.07746478873239436
 soundCategory_record:1.0
 soundCategory_weather:1.0
 soundCategory_block:1.0
